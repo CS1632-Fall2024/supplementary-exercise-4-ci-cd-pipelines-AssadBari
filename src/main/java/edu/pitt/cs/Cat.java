@@ -13,8 +13,15 @@ public interface Cat {
 			case SOLUTION:
 				return new CatSolution(id, name);
 			case MOCK:
+			Cat mockCat = Mockito.mock(Cat.class);
+    // You can predefine the mock's behavior using Mockito when() methods
+    when(mockCat.getId()).thenReturn(id);
+    when(mockCat.getName()).thenReturn(name);
+    when(mockCat.getRented()).thenReturn(false); // Assuming the cat is not rented by default
+
+    return mockCat;
 			    // TODO: Return a mock object that emulates the behavior of a real object.
-				return null;
+				
 			default:
 				assert(false);
 				return null;
