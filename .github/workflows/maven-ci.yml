@@ -1,7 +1,6 @@
 name: Maven CI
 
 # Triggers manually or on push or pull request on the main branch
-# (in other words, on a code integration event.)
 on:
   workflow_dispatch:
   push:
@@ -35,10 +34,17 @@ jobs:
         distribution: 'zulu'
         cache: maven
 
+    # Cache the build files to speed up subsequent runs
+    - name: Cache build
+      uses: actions/cache@v3
+      with:
+        key: cached-build-${{github.sha}}
+        path: .
+
     - name: Test with Maven
       run: mvn test
 
-    # https://github.com/marketplace/actions/upload-a-build-artifact
+    # Upload JaCoCo coverage results as an artifact
     - name: Upload jacoco results as artifact
       uses: actions/upload-artifact@v3
       with:
@@ -55,6 +61,14 @@ jobs:
 
     steps:
 
+    # Restore the cached build files
+    - name: Restore cached build
+      uses: actions/cache@v3
+      with:
+        key: cached-build-${{github.sha}}
+        path: .
+
+    # Update the dependency graph
     # https://github.com/marketplace/actions/maven-dependency-tree-dependency-submission
     - name: Update dependency graph
       uses: advanced-security/maven-dependency-submission-action@v3
